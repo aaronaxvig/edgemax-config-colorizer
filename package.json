@@ -14,7 +14,7 @@
         "languages": [{
             "id": "edgemax",
             "aliases": ["EdgeMax", "edgemax"],
-            "extensions": [".boot"],
+            "extensions": [".boot", ".edgemax"],
             "configuration": "./language-configuration.json"
         }],
         "grammars": [{
