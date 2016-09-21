@@ -1,6 +1,7 @@
 {
     "name": "edgemax-config-colorizer",
     "displayName": "EdgeMax Config Colorizer",
+    "description": "Syntax highlighting for Ubiquiti's EdgeRouter and EdgeSwitch configuration files.",
     "version": "0.0.1",
     "publisher": "aaronaxvig",
     "engines": {
