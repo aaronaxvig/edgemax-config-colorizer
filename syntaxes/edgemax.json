@@ -1,0 +1,76 @@
+{
+  "name": "EdgeMax",
+  "fileTypes": ["boot", "edgemax"],
+  "scopeName": "text.edgemax",
+  "patterns": [
+    {"include":"#interface-section"},
+    {"include":"#interface-clause"},
+    {"include":"#description"},
+    {
+      "match": " enable",
+      "name": "constant.language.edgemax"
+    },
+    {
+      "match": " disable",
+      "name": "constant.language.edgemax"
+    }
+  ],
+  "repository":{
+    "interface-section":{
+      "patterns":[
+        {
+          "name":"constant.language.edgemax",
+          "match":"^interfaces"
+        }
+      ]
+    },
+    "interface-clause":{
+      "patterns":[
+        {
+          "name":"meta.interface.edgemax",
+          "begin":"^\\s*ethernet",
+          "beginCaptures":{
+            "0":{"name":"constant.language.edgemax"}
+          },
+          "end":"\\{",
+          "patterns":[
+            {
+              "include":"#interface-id"
+            }
+          ]
+        }
+      ]
+    },
+    "interface-id":{
+      "patterns":[
+        {
+          "begin":"\\s*[a-z]*",
+          "beginCaptures":{
+            "0":{"name":"support.constant.type.interface.edgemax"}
+          },
+          "end":"([0-9]*[0-9\\.]*)",
+          "endCaptures":{
+            "0":{"name":"constant.numeric.interface-number.edgemax"}
+          }
+        }
+      ]
+    },
+    "description":{
+      "patterns":[
+        {
+          "begin":"description",
+          "beginCaptures":{
+            "0":{"name":"constant.language.edgemax"}
+          },
+          "end":"\\s*$",
+          "patterns":[
+            {
+              "match":".*",
+              "name":"string.quoted.double.edgemax"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

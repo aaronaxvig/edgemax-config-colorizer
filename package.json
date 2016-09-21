@@ -1,0 +1,25 @@
+{
+    "name": "edgemax-config-colorizer",
+    "displayName": "EdgeMax Config Colorizer",
+    "version": "0.0.1",
+    "publisher": "aaronaxvig",
+    "engines": {
+        "vscode": "^1.4.0"
+    },
+    "categories": [
+        "Languages"
+    ],
+    "contributes": {
+        "languages": [{
+            "id": "edgemax",
+            "aliases": ["EdgeMax", "edgemax"],
+            "extensions": [".boot"],
+            "configuration": "./language-configuration.json"
+        }],
+        "grammars": [{
+            "language": "edgemax",
+            "scopeName": "text.edgemax",
+            "path": "./syntaxes/edgemax.json"
+        }]
+    }
+}
