@@ -9,17 +9,13 @@
     {"include":"#attribute-with-number"},
     {"include":"#attribute-with-string"},
     {"include":"#description"},
-    {"include":"#firewall-rule"},
-    {"include":"#firewall-rule-group"},
-    {"include":"#firewall-section"},
     {"include":"#keywords"},
-    {"include":"#mtu-clause"},
+    {"include":"#section"},
     {"include":"#section-with-address"},
     {"include":"#section-with-interface"},
+    {"include":"#section-with-number"},
     {"include":"#section-with-string"},
-    {"include":"#simple-section"},
-    {"include":"#specials"},
-    {"include":"#vif-clause"}
+    {"include":"#specials"}
   ],
   "repository":{
     "address-ipv4":{
@@ -73,7 +69,7 @@
     "attribute-with-interface":{
       "patterns":[
         {
-          "begin":"^\\s*(interface|lan-interface|wan-interface)",
+          "begin":"^\\s*(interface|lan-interface|wan-interface)\\s",
           "beginCaptures":{
             "0":{"name":"keyword.other.edgemax"}
           },
@@ -89,7 +85,7 @@
     "attribute-with-number":{
       "patterns":[
         {
-          "begin":"^\\s*(https-port|metric-type|port)\\s",
+          "begin":"^\\s*(https-port|metric-type|mtu|port)\\s",
           "beginCaptures":{
             "0":{"name":"keyword.other.edgemax"}
           },
@@ -103,7 +99,7 @@
     "attribute-with-string":{
       "patterns":[
         {
-          "begin":"^\\s*(abr-type|authorization|encrypted-password|full-name|host-name|level|plaintext-password|protocol-version)\\s",
+          "begin":"^\\s*(abr-type|authorization|encrypted-password|full-name|host-name|level|plaintext-password|protocol-version|time-zone)\\s",
           "beginCaptures":{
             "0":{"name":"keyword.other.edgemax"}
           },
@@ -128,51 +124,6 @@
               "name":"string.quoted.double.edgemax"
             }
           ]
-        }
-      ]
-    },
-    "firewall-rule":{
-      "patterns":[
-        {
-          "begin":"^\\s*rule",
-          "beginCaptures":{
-            "0":{"name":"constant.language.edgemax"}
-          },
-          "end":"\\{$",
-          "patterns":[
-            {
-              "match":"[0-9]+",
-              "name":"constant.numeric.rule-number.edgemax"
-            }
-          ]
-        }
-      ]
-    },
-    "firewall-rule-group":{
-      "patterns":[
-        {
-          "begin":"^\\s*name",
-          "beginCaptures":{
-            "0":{"name":"constant.language.edgemax"}
-          },
-          "end":"\\{$",
-          "patterns":[
-            {
-              "match":"[A-Za-z_]+",
-              "name":"string.quoted.double.edgemax"
-            }
-          ]
-        }
-      ]
-    },
-    "firewall-section":{
-      "patterns":[
-        {
-          "begin":"^\\s*firewall",
-          "beginCaptures":{
-            "0":{"name":"support.class.edgemax"}
-          },
-          "end":"\\s*\\{\\s*$"
         }
       ]
     },
@@ -270,17 +221,14 @@
         }
       ]
     },
-    "mtu-clause":{
+    "section":{
       "patterns":[
         {
-          "begin":"^\\s*mtu",
+          "begin":"(^\\s*)(area\\-type|authentication|connected|dhcp-relay|firewall|global|group|gui|interfaces|local|login|ntp|ospf|parameters|port-forward|protocols|redistribute|service|snmp|source|ssh|static|syslog|system)",
           "beginCaptures":{
-            "0":{"name":"constant.language.edgemax"}
+            "0":{"name":"support.class.edgemax"}
           },
-          "end":"[0-9]+",
-          "endCaptures":{
-            "0":{"name":"constant.numeric.edgemax"}
-          }
+          "end":"\\s*\\{\\s*$"
         }
       ]
     },
@@ -305,7 +253,7 @@
         {
           "begin":"^\\s*(ethernet|loopback)\\s",
           "beginCaptures":{
-            "0":{"name":"constant.language.edgemax"}
+            "0":{"name":"support.class.edgemax"}
           },
           "end":"\\{",
           "patterns":[
@@ -316,10 +264,27 @@
         }
       ]
     },
+    "section-with-number":{
+      "patterns":[
+        {
+          "begin":"^\\s*(rule|vif)\\s",
+          "beginCaptures":{
+            "0":{"name":"support.class.edgemax"}
+          },
+          "end":"\\s*\\{\\s*$",
+          "patterns":[
+            {
+              "match":"[0-9]+",
+              "name":"constant.numeric.edgemax"
+            }
+          ]
+        }
+      ]
+    },
     "section-with-string":{
       "patterns":[
         {
-          "begin":"^\\s*(community|server|user)\\s",
+          "begin":"^\\s*(community|facility|name|server|user)\\s",
           "beginCaptures":{
             "0":{"name":"support.class.edgemax"}
           },
@@ -330,17 +295,6 @@
               "name":"string.quoted.double.edgemax"
             }
           ]
-        }
-      ]
-    },
-    "simple-section":{
-      "patterns":[
-        {
-          "begin":"(^\\s*)(area-type|authentication|connected|dhcp-relay|global|group|gui|interfaces|local|login|ntp|ospf|parameters|port-forward|protocols|redistribute|service|snmp|source|ssh|static|syslog|system)",
-          "beginCaptures":{
-            "0":{"name":"support.class.edgemax"}
-          },
-          "end":"\\s*\\{\\s*$"
         }
       ]
     },
@@ -365,24 +319,6 @@
         {
           "match": "enable\\s*$",
           "name": "constant.language.edgemax"
-        }
-      ]
-    },
-    "vif-clause":{
-      "patterns":[
-        {
-          "name":"meta.interface.vif.edgemax",
-          "begin":"^\\s*vif",
-          "beginCaptures":{
-            "0":{"name":"constant.language.edgemax"}
-          },
-          "end":"\\{",
-          "patterns":[
-            {
-              "match":"[0-9]+",
-              "name":"constant.numeric.edgemax"
-            }
-          ]
         }
       ]
     }
