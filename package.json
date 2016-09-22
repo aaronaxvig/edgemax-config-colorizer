@@ -11,16 +11,31 @@
         "Languages"
     ],
     "contributes": {
-        "languages": [{
-            "id": "edgemax",
-            "aliases": ["EdgeMax", "edgemax"],
-            "extensions": [".boot", ".edgemax"],
-            "configuration": "./language-configuration.json"
-        }],
-        "grammars": [{
-            "language": "edgemax",
-            "scopeName": "text.edgemax",
-            "path": "./syntaxes/edgemax.json"
-        }]
+        "languages": [
+            {
+                "id": "edgerouter",
+                "aliases": ["EdgeRouter", "edgerouter"],
+                "extensions": [".edgerouter"],
+                "configuration": "./language-configuration.json"
+            },
+            {
+                "id": "edgeswitch",
+                "aliases": ["EdgeSwitch", "edgeswitch"],
+                "extensions": [".edgeswitch"],
+                "configuration": "./language-configuration.json"
+            }
+        ],
+        "grammars": [
+            {
+                "language": "edgerouter",
+                "scopeName": "text.edgerouter",
+                "path": "./syntaxes/edgerouter.json"
+            },
+            {
+                "language": "edgeswitch",
+                "scopeName": "text.edgeswitch",
+                "path": "./syntaxes/edgeswitch.json"
+            }
+        ]
     }
 }

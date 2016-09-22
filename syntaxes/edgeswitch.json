@@ -1,0 +1,18 @@
+{
+  "name": "EdgeSwitch",
+  "fileTypes": ["edgeswitch"],
+  "scopeName": "text.edgeswitch",
+  "patterns": [
+    {"include":"#keywords"}
+  ],
+  "repository":{
+    "keywords":{
+      "patterns":[
+        {
+          "match":"vlan",
+          "name":"keyword.other.edgemax"
+        }
+      ]
+    }
+  }
+}
