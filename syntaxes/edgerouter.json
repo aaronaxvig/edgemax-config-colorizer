@@ -48,68 +48,12 @@
         }
       ]
     },
-    "firewall-rule":{
-      "patterns":[
-        {
-          "begin":"(rule\\s)(([1-9][0-9]{3}|[1-9][0-9]{2}|[1-9][0-9]|[1-9])\\s)(\\{)",
-          "beginCaptures":{
-            "1":{"name":"keyword.other.edgemax"},
-            "2":{"name":"constant.numeric.edgemax"},
-            "3":{"name":"constant.character.edgemax"}
-          },
-          "end":"(\\s\\})",
-          "endCaptures":{
-            "1":{"name":"constant.character.edgemax"}
-          },
-          "patterns":[
-            {
-              "include":"#firewall-rule-source"
-            }
-          ]
-        }
-      ]
-    },
-    "firewall-rule-source":{
-      "patterns":[
-        {
-          "begin":"(source\\s)(\\{)",
-          "beginCaptures":{
-            "1":{"name":"keyword.other.edgemax"},
-            "2":{"name":"constant.character.edgemax"}
-          },
-          "end":"(\\})",
-          "endCaptures":{
-            "1":{"name":"constant.character.edgemax"}
-          },
-          "patterns":[
-            {
-              "include":"#firewall-rule-source-group"
-            }
-          ]
-        }
-      ]
-    },
-    "firewall-rule-source-group":{
-      "patterns":[
-        {
-          "begin":"(group\\s)(\\{)",
-          "beginCaptures":{
-            "1":{"name":"keyword.other.edgemax"},
-            "2":{"name":"constant.character.edgemax"}
-          },
-          "end":"(\\})",
-          "endCaptures":{
-            "1":{"name":"constant.character.edgemax"}
-          }
-        }
-      ]
-    },
     "firewall-ruleset":{
       "patterns":[
         {
           "begin":"(name\\s)(\\w+\\s)(\\{)",
           "beginCaptures":{
-            "1":{"name":"keyword.other.edgemax"},
+            "1":{"name":"support.class.edgemax"},
             "2":{"name":"string.quoted.double.edgemax"},
             "3":{"name":"constant.character.edgemax"}
           },
@@ -119,13 +63,117 @@
           },
           "patterns":[
             {
-              "include":"#firewall-rule"
+              "include":"#firewall-ruleset-rule"
             },
             {
               "match":"(default-action\\s)(accept|drop|accept)",
               "captures":{
                 "1":{"name":"keyword.other.edgemax"},
                 "2":{"name":"constant.language.edgemax"}
+              }
+            },
+            {
+              "match":"(description\\s)(\")(.*)(\")",
+              "captures":{
+                "1":{"name":"keyword.other.edgemax"},
+                "2":{"name":"constant.language.edgemax"},
+                "3":{"name":"string.quoted.double.edgemax"},
+                "4":{"name":"constant.language.edgemax"}
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "firewall-ruleset-rule":{
+      "patterns":[
+        {
+          "begin":"(rule\\s)((?:[1-9][0-9]{3}|[1-9][0-9]{2}|[1-9][0-9]|[1-9])\\s)(\\{)",
+          "beginCaptures":{
+            "1":{"name":"support.class.edgemax"},
+            "2":{"name":"constant.numeric.edgemax"},
+            "3":{"name":"constant.character.edgemax"}
+          },
+          "end":"(\\s\\})",
+          "endCaptures":{
+            "1":{"name":"constant.character.edgemax"}
+          },
+          "patterns":[
+            {
+              "include":"#firewall-ruleset-rule-source"
+            },
+            {
+              "match":"(action\\s)(accept|drop|accept)",
+              "captures":{
+                "1":{"name":"keyword.other.edgemax"},
+                "2":{"name":"constant.language.edgemax"}
+              }
+            },
+            {
+              "match":"(description\\s)(\")(.*)(\")",
+              "captures":{
+                "1":{"name":"keyword.other.edgemax"},
+                "2":{"name":"constant.language.edgemax"},
+                "3":{"name":"string.quoted.double.edgemax"},
+                "4":{"name":"constant.language.edgemax"}
+              }
+            },
+            {
+              "match":"(log\\s)(disable|enable)",
+              "captures":{
+                "1":{"name":"keyword.other.edgemax"},
+                "2":{"name":"constant.language.edgemax"}
+              }
+            },
+            {
+              "match":"(protocol\\s)(all)",
+              "captures":{
+                "1":{"name":"keyword.other.edgemax"},
+                "2":{"name":"constant.language.edgemax"}
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "firewall-ruleset-rule-source":{
+      "patterns":[
+        {
+          "begin":"(source\\s)(\\{)",
+          "beginCaptures":{
+            "1":{"name":"support.class.edgemax"},
+            "2":{"name":"constant.character.edgemax"}
+          },
+          "end":"(\\})",
+          "endCaptures":{
+            "1":{"name":"constant.character.edgemax"}
+          },
+          "patterns":[
+            {
+              "include":"#firewall-ruleset-rule-source-group"
+            }
+          ]
+        }
+      ]
+    },
+    "firewall-ruleset-rule-source-group":{
+      "patterns":[
+        {
+          "begin":"(group\\s)(\\{)",
+          "beginCaptures":{
+            "1":{"name":"support.class.edgemax"},
+            "2":{"name":"constant.character.edgemax"}
+          },
+          "end":"(\\})",
+          "endCaptures":{
+            "1":{"name":"constant.character.edgemax"}
+          },
+          "patterns":[
+            {
+              "match":"(address-group\\s)(.*)",
+              "captures":{
+                "1":{"name":"keyword.other.edgemax"},
+                "2":{"name":"string.unquoted.edgemax"}
               }
             }
           ]
