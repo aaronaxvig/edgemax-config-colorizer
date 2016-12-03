@@ -6,7 +6,8 @@
     {"include":"#firewall"},
     {"include":"#interfaces"},
     {"include":"#portforward"},
-    {"include":"#protocols"}
+    {"include":"#protocols"},
+    {"include":"#service"}
   ],
   "patterns-old": [
     {"include":"#attribute-with-address"},
@@ -199,6 +200,7 @@
             {"include":"#line-address-with-subnet"},
             {"include":"#line-description"},
             {"include":"#interfaces-ethernet-firewall"},
+            {"include":"#interfaces-ethernet-poe"},
             {"include":"#interfaces-ethernet-vif"},
             {
               "match":"(duplex\\s)(auto|full|half)",
@@ -231,8 +233,24 @@
             "1":{"name":"constant.numeric.edgemax"}
           },
           "patterns":[
+            {"include":"#interfaces-ethernet-firewall-in"},
             {"include":"#interfaces-ethernet-firewall-local"}
           ]
+        }
+      ]
+    },
+    "interfaces-ethernet-firewall-in":{
+      "patterns":[
+        {
+          "begin":"(in\\s)(\\{)",
+          "beginCaptures":{
+            "1":{"name":"support.class.edgemax"},
+            "2":{"name":"constant.character.edgemax"}
+          },
+          "end":"(\\})",
+          "endCaptures":{
+            "1":{"name":"constant.numeric.edgemax"}
+          }
         }
       ]
     },
@@ -248,6 +266,30 @@
           "endCaptures":{
             "1":{"name":"constant.numeric.edgemax"}
           }
+        }
+      ]
+    },
+    "interfaces-ethernet-poe":{
+      "patterns":[
+        {
+          "begin":"(poe\\s)(\\{)",
+          "beginCaptures":{
+            "1":{"name":"support.class.edgemax"},
+            "2":{"name":"constant.character.edgemax"}
+          },
+          "end":"(\\})",
+          "endCaptures":{
+            "1":{"name":"constant.numeric.edgemax"}
+          },
+          "patterns":[
+            {
+              "match":"(output\\s)(24v|off)",
+              "captures":{
+                "1":{"name":"keyword.other.edgemax"},
+                "2":{"name":"constant.language.edgemax"}
+              }
+            }
+          ]
         }
       ]
     },
@@ -330,6 +372,22 @@
       "patterns":[
         {
           "begin":"(router-id)\\s",
+          "beginCaptures":{
+            "1":{"name":"keyword.other.edgemax"}
+          },
+          "end":"$",
+          "patterns":[
+            {
+              "include":"#part-address-ipv4"
+            }
+          ]
+        }
+      ]
+    },
+    "line-server-address":{
+      "patterns":[
+        {
+          "begin":"(server)\\s",
           "beginCaptures":{
             "1":{"name":"keyword.other.edgemax"}
           },
@@ -569,6 +627,150 @@
             "1":{"name":"constant.character.edgemax"}
           },
           "patterns":[]
+        }
+      ]
+    },
+    "service":{
+      "patterns":[
+        {
+          "begin":"(service\\s)(\\{)",
+          "beginCaptures":{
+            "1":{"name":"support.class.edgemax"},
+            "2":{"name":"constant.character.edgemax"}
+          },
+          "end":"(\\})",
+          "endCaptures":{
+            "1":{"name":"constant.numeric.edgemax"}
+          },
+          "patterns":[
+            {"include":"#service-dhcprelay"},
+            {"include":"#service-gui"},
+            {"include":"#service-snmp"},
+            {"include":"#service-ssh"}
+          ]
+        }
+      ]
+    },
+    "service-dhcprelay":{
+      "patterns":[
+        {
+          "begin":"(dhcp-relay\\s)(\\{)",
+          "beginCaptures":{
+            "1":{"name":"support.class.edgemax"},
+            "2":{"name":"constant.character.edgemax"}
+          },
+          "end":"(\\})",
+          "endCaptures":{
+            "1":{"name":"constant.numeric.edgemax"}
+          },
+          "patterns":[
+            {"include":"#line-server-address"},
+            {
+              "match":"(interface\\s)(.+)",
+              "captures":{
+                "1":{"name":"keyword.other.edgemax"},
+                "2":{"name":"string.unquoted.edgemax"}
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "service-gui":{
+      "patterns":[
+        {
+          "begin":"(gui\\s)(\\{)",
+          "beginCaptures":{
+            "1":{"name":"support.class.edgemax"},
+            "2":{"name":"constant.character.edgemax"}
+          },
+          "end":"(\\})",
+          "endCaptures":{
+            "1":{"name":"constant.numeric.edgemax"}
+          },
+          "patterns":[
+            {
+              "match":"((?:http-port|https-port)\\s)([0-9]+)",
+              "captures":{
+                "1":{"name":"keyword.other.edgemax"},
+                "2":{"name":"string.unquoted.edgemax"}
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "service-snmp":{
+      "patterns":[
+        {
+          "begin":"(snmp\\s)(\\{)",
+          "beginCaptures":{
+            "1":{"name":"support.class.edgemax"},
+            "2":{"name":"constant.character.edgemax"}
+          },
+          "end":"(\\})",
+          "endCaptures":{
+            "1":{"name":"constant.numeric.edgemax"}
+          },
+          "patterns":[
+            {"include":"#service-snmp-community"}
+          ]
+        }
+      ]
+    },
+    "service-snmp-community":{
+      "patterns":[
+        {
+          "begin":"(community\\s)(\\w+\\s)(\\{)",
+          "beginCaptures":{
+            "1":{"name":"support.class.edgemax"},
+            "2":{"name":"string.unquoted.edgemax"},
+            "3":{"name":"constant.character.edgemax"}
+          },
+          "end":"(\\})",
+          "endCaptures":{
+            "1":{"name":"constant.numeric.edgemax"}
+          },
+          "patterns":[
+            {
+              "match":"(authorization\\s)(ro|rw)",
+              "captures":{
+                "1":{"name":"keyword.other.edgemax"},
+                "2":{"name":"constant.language.edgemax"}
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "service-ssh":{
+      "patterns":[
+        {
+          "begin":"(ssh\\s)(\\{)",
+          "beginCaptures":{
+            "1":{"name":"support.class.edgemax"},
+            "2":{"name":"constant.character.edgemax"}
+          },
+          "end":"(\\})",
+          "endCaptures":{
+            "1":{"name":"constant.numeric.edgemax"}
+          },
+          "patterns":[
+            {
+              "match":"(port\\s)([0-9]+)",
+              "captures":{
+                "1":{"name":"keyword.other.edgemax"},
+                "2":{"name":"string.unquoted.edgemax"}
+              }
+            },
+            {
+              "match":"(protocol-version\\s)(all|v1|v2)",
+              "captures":{
+                "1":{"name":"keyword.other.edgemax"},
+                "2":{"name":"constant.language.edgemax"}
+              }
+            }
+          ]
         }
       ]
     },
