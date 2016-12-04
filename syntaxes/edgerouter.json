@@ -24,9 +24,8 @@
             "1":{"name":"constant.numeric.edgemax"}
           },
           "patterns":[
-            {
-              "include":"#firewall-name"
-            },
+            {"include":"#firewall-group"},
+            {"include":"#firewall-name"},
             {
               "match":"((?:all-ping|broadcast-ping|ipv6-receive-redirects|ipv6-src-route|ip-src-route|log-martians|receive-redirects|send-redirects|source-validation|syn-cookies)\\s)(enable|disable)",
               "captures":{
@@ -38,10 +37,47 @@
         }
       ]
     },
+    "firewall-group":{
+      "patterns":[
+        {
+          "begin":"(group)\\s(\\{)",
+          "beginCaptures":{
+            "1":{"name":"support.class.edgemax"},
+            "2":{"name":"constant.character.edgemax"}
+          },
+          "end":"(\\s\\})",
+          "endCaptures":{
+            "1":{"name":"constant.character.edgemax"}
+          },
+          "patterns":[
+            {"include":"#firewall-group-networkgroup"}
+          ]
+        }
+      ]
+    },
+    "firewall-group-networkgroup":{
+      "patterns":[
+        {
+          "begin":"(network-group)\\s(.+)\\s(\\{)",
+          "beginCaptures":{
+            "1":{"name":"support.class.edgemax"},
+            "2":{"name":"string.unquoted.edgemax"},
+            "3":{"name":"constant.character.edgemax"}
+          },
+          "end":"(\\s\\})",
+          "endCaptures":{
+            "1":{"name":"constant.character.edgemax"}
+          },
+          "patterns":[
+            {"include":"#line-network-with-subnet"}
+          ]
+        }
+      ]
+    },
     "firewall-name":{
       "patterns":[
         {
-          "begin":"(name\\s)(\\w+\\s)(\\{)",
+          "begin":"(name|modify)\\s(\\w+\\s)(\\{)",
           "beginCaptures":{
             "1":{"name":"support.class.edgemax"},
             "2":{"name":"string.unquoted.edgemax"},
@@ -62,13 +98,13 @@
               }
             },
             {
-              "match":"(enable-default-drop)$",
+              "match":"(enable-default-drop)",
               "captures":{
                 "1":{"name":"keyword.other.edgemax"}
               }
             },
             {
-              "match":"(enable-default-log)$",
+              "match":"(enable-default-log)",
               "captures":{
                 "1":{"name":"keyword.other.edgemax"}
               }
@@ -91,12 +127,14 @@
             "1":{"name":"constant.character.edgemax"}
           },
           "patterns":[
+            {"include":"#firewall-name-rule-destination"},
+            {"include":"#firewall-name-rule-modify"},
             {"include":"#firewall-name-rule-source"},
             {"include":"#firewall-name-rule-state"},
             {"include":"#line-description"},
             {"include":"#line-protocol"},
             {
-              "match":"(action\\s)(accept|drop|accept)",
+              "match":"(action\\s)(accept|drop|modify)",
               "captures":{
                 "1":{"name":"keyword.other.edgemax"},
                 "2":{"name":"constant.language.edgemax"}
@@ -120,6 +158,87 @@
         }
       ]
     },
+    "firewall-name-rule-destination":{
+      "patterns":[
+        {
+          "begin":"(destination)\\s(\\{)",
+          "beginCaptures":{
+            "1":{"name":"support.class.edgemax"},
+            "2":{"name":"constant.character.edgemax"}
+          },
+          "end":"(\\s\\})",
+          "endCaptures":{
+            "1":{"name":"constant.character.edgemax"}
+          },
+          "patterns":[
+            {"include":"#firewall-name-rule-destination-group"},
+            {"include":"#line-address-with-subnet"}
+          ]
+        }
+      ]
+    },
+    "firewall-name-rule-destination-group":{
+      "patterns":[
+        {
+          "begin":"(group)\\s(\\{)",
+          "beginCaptures":{
+            "1":{"name":"support.class.edgemax"},
+            "2":{"name":"constant.character.edgemax"}
+          },
+          "end":"(\\s\\})",
+          "endCaptures":{
+            "1":{"name":"constant.character.edgemax"}
+          },
+          "patterns":[
+            {
+              "match":"(address-group)\\s(.+)",
+              "captures":{
+                "1":{"name":"keyword.other.edgemax"},
+                "2":{"name":"string.unquoted.edgemax"}
+              }
+            },
+            {
+              "match":"(network-group)\\s(.+)",
+              "captures":{
+                "1":{"name":"keyword.other.edgemax"},
+                "2":{"name":"string.unquoted.edgemax"}
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "firewall-name-rule-modify":{
+      "patterns":[
+        {
+          "begin":"(modify)\\s(\\{)",
+          "beginCaptures":{
+            "1":{"name":"support.class.edgemax"},
+            "2":{"name":"constant.character.edgemax"}
+          },
+          "end":"(\\s\\})",
+          "endCaptures":{
+            "1":{"name":"constant.character.edgemax"}
+          },
+          "patterns":[
+            {
+              "match":"(lb-group)\\s(.+)",
+              "captures":{
+                "1":{"name":"keyword.other.edgemax"},
+                "2":{"name":"string.unquoted.edgemax"}
+              }
+            },
+            {
+              "match":"(table)\\s(.+)",
+              "captures":{
+                "1":{"name":"keyword.other.edgemax"},
+                "2":{"name":"string.unquoted.edgemax"}
+              }
+            }
+          ]
+        }
+      ]
+    },
     "firewall-name-rule-source":{
       "patterns":[
         {
@@ -133,9 +252,8 @@
             "1":{"name":"constant.character.edgemax"}
           },
           "patterns":[
-            {
-              "include":"#firewall-name-rule-source-group"
-            }
+            {"include":"#firewall-name-rule-source-group"},
+            {"include":"#line-address-with-subnet"}
           ]
         }
       ]
@@ -167,7 +285,7 @@
     "firewall-name-rule-state":{
       "patterns":[
         {
-          "begin":"(state)\\s(\\{)$",
+          "begin":"(state)\\s(\\{)\\s*$",
           "beginCaptures":{
             "1":{"name":"support.class.edgemax"},
             "2":{"name":"constant.character.edgemax"}
@@ -186,6 +304,13 @@
             },
             {
               "match":"(invalid)\\s(disable|enable)",
+              "captures":{
+                "1":{"name":"keyword.other.edgemax"},
+                "2":{"name":"constant.language.edgemax"}
+              }
+            },
+            {
+              "match":"(new)\\s(disable|enable)",
               "captures":{
                 "1":{"name":"keyword.other.edgemax"},
                 "2":{"name":"constant.language.edgemax"}
@@ -236,6 +361,13 @@
             "1":{"name":"constant.numeric.edgemax"}
           },
           "patterns":[
+            {
+              "match":"(address)\\s(dhcp|dhcpv6)",
+              "captures":{
+                "1":{"name":"keyword.other.edgemax"},
+                "2":{"name":"constant.language.edgemax"}
+              }
+            },
             {"include":"#line-address-with-subnet"},
             {"include":"#line-description"},
             {"include":"#interfaces-ethernet-firewall"},
@@ -273,7 +405,8 @@
           },
           "patterns":[
             {"include":"#interfaces-ethernet-firewall-in"},
-            {"include":"#interfaces-ethernet-firewall-local"}
+            {"include":"#interfaces-ethernet-firewall-local"},
+            {"include":"#interfaces-ethernet-firewall-out"}
           ]
         }
       ]
@@ -300,6 +433,24 @@
       "patterns":[
         {
           "begin":"(local\\s)(\\{)",
+          "beginCaptures":{
+            "1":{"name":"support.class.edgemax"},
+            "2":{"name":"constant.character.edgemax"}
+          },
+          "end":"(\\})",
+          "endCaptures":{
+            "1":{"name":"constant.numeric.edgemax"}
+          },
+          "patterns":[
+            {"include":"#line-name"}
+          ]
+        }
+      ]
+    },
+    "interfaces-ethernet-firewall-out":{
+      "patterns":[
+        {
+          "begin":"(out\\s)(\\{)",
           "beginCaptures":{
             "1":{"name":"support.class.edgemax"},
             "2":{"name":"constant.character.edgemax"}
@@ -682,7 +833,7 @@
     "part-address-ipv4-with-subnet":{
       "patterns":[
         {
-          "match":"(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$",
+          "match":"(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))\\s*$",
           "name":"constant.numeric.edgemax"
         }
       ]
