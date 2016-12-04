@@ -427,6 +427,38 @@
         }
       ]
     },
+    "line-gatewayaddress-address":{
+      "patterns":[
+        {
+          "begin":"(gateway-address)\\s",
+          "beginCaptures":{
+            "1":{"name":"keyword.other.edgemax"}
+          },
+          "end":"$",
+          "patterns":[
+            {
+              "include":"#part-address-ipv4"
+            }
+          ]
+        }
+      ]
+    },
+    "line-nameserver-address":{
+      "patterns":[
+        {
+          "begin":"(name-server)\\s",
+          "beginCaptures":{
+            "1":{"name":"keyword.other.edgemax"}
+          },
+          "end":"$",
+          "patterns":[
+            {
+              "include":"#part-address-ipv4"
+            }
+          ]
+        }
+      ]
+    },
     "line-network-with-subnet":{
       "patterns":[
         {
@@ -862,18 +894,27 @@
             "1":{"name":"constant.numeric.edgemax"}
           },
           "patterns":[
+            {"include":"#line-gatewayaddress-address"},
+            {"include":"#line-nameserver-address"},
             {"include":"#system-login"},
             {"include":"#system-ntp"},
             {"include":"#system-syslog"},
             {
-              "match":"(host-name\\s)(.+)",
+              "match":"(domain-name|host-name)\\s(.+)",
               "captures":{
                 "1":{"name":"keyword.other.edgemax"},
                 "2":{"name":"string.unquoted.edgemax"}
               }
             },
             {
-              "match":"(time-zone\\s)(Africa|America|Antarctica|Arctic|Asia|Atlantic|Australia|Brazil|Canada|Chile|Etc|Europe|Indian|Mexico|Pacific|SystemV|US|UTC)",
+              "match":"(domain-name|host-name)\\s(.+)",
+              "captures":{
+                "1":{"name":"keyword.other.edgemax"},
+                "2":{"name":"string.unquoted.edgemax"}
+              }
+            },
+            {
+              "match":"(time-zone)\\s(.+)$",
               "captures":{
                 "1":{"name":"keyword.other.edgemax"},
                 "2":{"name":"constant.language.edgemax"}
@@ -904,7 +945,7 @@
     "system-login-user":{
       "patterns":[
         {
-          "begin":"(user\\s)(\\w+\\s)(\\{)",
+          "begin":"(user\\s)(.+\\s)(\\{)",
           "beginCaptures":{
             "1":{"name":"support.class.edgemax"},
             "2":{"name":"string.unquoted.edgemax"},
