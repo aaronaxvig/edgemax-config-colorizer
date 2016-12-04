@@ -164,7 +164,8 @@
           },
           "patterns":[
             {"include":"#interfaces-ethernet"},
-            {"include":"#interfaces-loopback"}
+            {"include":"#interfaces-loopback"},
+            {"include":"#interfaces-switch"}
           ]
         }
       ]
@@ -319,6 +320,94 @@
           "endCaptures":{
             "1":{"name":"constant.numeric.edgemax"}
           }
+        }
+      ]
+    },
+    "interfaces-switch":{
+      "patterns":[
+        {
+          "begin":"(switch\\s)(\\w+\\s)(\\{)",
+          "beginCaptures":{
+            "1":{"name":"support.class.edgemax"},
+            "2":{"name":"string.unquoted.edgemax"},
+            "3":{"name":"constant.character.edgemax"}
+          },
+          "end":"(\\})",
+          "endCaptures":{
+            "1":{"name":"constant.numeric.edgemax"}
+          },
+          "patterns":[
+            {"include":"#interfaces-switch-switchport"},
+            {"include":"#line-description"}
+          ]
+        }
+      ]
+    },
+    "interfaces-switch-switchport":{
+      "patterns":[
+        {
+          "begin":"(switch-port\\s)(\\{)",
+          "beginCaptures":{
+            "1":{"name":"support.class.edgemax"},
+            "2":{"name":"constant.character.edgemax"}
+          },
+          "end":"(\\})",
+          "endCaptures":{
+            "1":{"name":"constant.numeric.edgemax"}
+          },
+          "patterns":[
+            {"include":"#interfaces-switch-switchport-interface"},
+            {
+              "match":"(vlan-aware)\\s(disable|enable)$",
+              "captures":{
+                "1":{"name":"keyword.other.edgemax"},
+                "2":{"name":"constant.language.edgemax"}
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "interfaces-switch-switchport-interface":{
+      "patterns":[
+        {
+          "begin":"(interface\\s)(\\w+\\s)(\\{)",
+          "beginCaptures":{
+            "1":{"name":"support.class.edgemax"},
+            "2":{"name":"string.unquoted.edgemax"},
+            "3":{"name":"constant.character.edgemax"}
+          },
+          "end":"(\\})",
+          "endCaptures":{
+            "1":{"name":"constant.numeric.edgemax"}
+          },
+          "patterns":[
+            {"include":"#interfaces-switch-switchport-interface-vlan"}
+          ]
+        }
+      ]
+    },
+    "interfaces-switch-switchport-interface-vlan":{
+      "patterns":[
+        {
+          "begin":"(vlan\\s)(\\{)",
+          "beginCaptures":{
+            "1":{"name":"support.class.edgemax"},
+            "2":{"name":"constant.character.edgemax"}
+          },
+          "end":"(\\})",
+          "endCaptures":{
+            "1":{"name":"constant.numeric.edgemax"}
+          },
+          "patterns":[
+            {
+              "match":"(pvid|vid)\\s(\\d+)$",
+              "captures":{
+                "1":{"name":"keyword.other.edgemax"},
+                "2":{"name":"constant.numeric.edgemax"}
+              }
+            }
+          ]
         }
       ]
     },

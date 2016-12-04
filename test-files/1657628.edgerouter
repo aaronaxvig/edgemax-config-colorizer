@@ -1,0 +1,155 @@
+interfaces {
+    ethernet eth0 {
+        address 192.168.1.50/24
+        description ERX-WAN
+    }
+    ethernet eth1 {
+        address 10.0.20.1/24
+        description ERX-PRIMARY
+        vif 25 {
+            address 10.0.25.1/24
+            description WLAN-LINK
+        }
+        vif 30 {
+            address 10.0.30.1/24
+            description WLAN-GUEST
+            mtu 1500
+        }
+        vif 35 {
+            address 10.0.35.1/24
+            description WLAN-PRIMARY
+            mtu 1500
+        }
+    }
+    ethernet eth2 {
+        description VACANT-2
+    }
+    ethernet eth3 {
+        description SWITCHp3
+    }
+    ethernet eth4 {
+        description SWITCHp4
+        poe {
+            output off
+        }
+    }
+    loopback lo {
+    }
+    switch switch0 {
+        description WLAN-LINK-SW
+        switch-port {
+            interface eth3 {
+                vlan {
+                    pvid 25
+                    vid 30
+                    vid 35
+                }
+            }
+            interface eth4 {
+                vlan {
+                    pvid 25
+                    vid 30
+                    vid 35
+                }
+            }
+            vlan-aware enable
+        }
+    }
+}
+service {
+    dhcp-server {
+        shared-network-name DHCP-PRIMARY {
+            subnet 10.0.20.0/24 {
+                default-router 10.0.20.1
+                dns-server 8.8.8.8
+                dns-server 8.8.4.4
+                start 10.0.20.101 {
+                    stop 10.0.20.150
+                }
+            }
+        }
+        shared-network-name WLAN-GUEST {
+            subnet 10.0.30.0/24 {
+                default-router 10.0.30.1
+                dns-server 8.8.8.8
+                dns-server 8.8.4.4
+                start 10.0.30.101 {
+                    stop 10.0.30.150
+                }
+                unifi-controller 10.0.25.10
+            }
+        }
+        shared-network-name WLAN-LINK {
+            subnet 10.0.25.0/24 {
+                default-router 10.0.25.1
+                dns-server 8.8.8.8
+                dns-server 8.8.4.4
+                start 10.0.25.101 {
+                    stop 10.0.25.150
+                }
+            }
+        }
+        shared-network-name WLAN-PRIMARY {
+            subnet 10.0.35.0/24 {
+                default-router 10.0.35.1
+                dns-server 8.8.8.8
+                dns-server 8.8.4.4
+                start 10.0.35.101 {
+                    stop 10.0.35.150
+                }
+                unifi-controller 10.0.25.10
+            }
+        }
+    }
+    gui {
+    }
+    nat {
+        rule 5000 {
+            description WAN-MASQUERADE
+            log disable
+            outbound-interface eth0
+            protocol all
+            type masquerade
+        }
+    }
+    ssh {
+    }
+}
+system {
+    domain-name downlink
+    gateway-address 192.168.1.1
+    host-name ERX
+    login {
+        user erx-admin {
+            authentication {
+                encrypted-password ****************
+                plaintext-password ****************
+            }
+            full-name erx-admin
+            level admin
+        }
+    }
+    name-server 8.8.8.8
+    name-server 8.8.4.4
+    ntp {
+        server 0.ubnt.pool.ntp.org {
+        }
+        server 1.ubnt.pool.ntp.org {
+        }
+        server 2.ubnt.pool.ntp.org {
+        }
+        server 3.ubnt.pool.ntp.org {
+        }
+    }
+    syslog {
+        global {
+            facility all {
+                level notice
+            }
+            facility protocols {
+                level debug
+            }
+        }
+    }
+    time-zone America/New_York
+}
