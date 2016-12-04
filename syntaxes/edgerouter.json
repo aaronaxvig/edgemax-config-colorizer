@@ -427,6 +427,58 @@
         }
       ]
     },
+    "line-defaultrouter-address":{
+      "patterns":[
+        {
+          "begin":"(default-router)\\s",
+          "beginCaptures":{
+            "1":{"name":"keyword.other.edgemax"}
+          },
+          "end":"$",
+          "patterns":[
+            {
+              "include":"#part-address-ipv4"
+            }
+          ]
+        }
+      ]
+    },
+    "line-description":{
+      "patterns":[
+        {
+          "match":"(description\\s)(\")(.*)(\")",
+          "captures":{
+            "1":{"name":"keyword.other.edgemax"},
+            "2":{"name":"constant.language.edgemax"},
+            "3":{"name":"string.quoted.double.edgemax"},
+            "4":{"name":"constant.language.edgemax"}
+          }
+        },
+        {
+          "match":"(description\\s)(.*)",
+          "captures":{
+            "1":{"name":"keyword.other.edgemax"},
+            "2":{"name":"string.unquoted.edgemax"}
+          }
+        }
+      ]
+    },
+    "line-dnsserver-address":{
+      "patterns":[
+        {
+          "begin":"(dns-server)\\s",
+          "beginCaptures":{
+            "1":{"name":"keyword.other.edgemax"}
+          },
+          "end":"$",
+          "patterns":[
+            {
+              "include":"#part-address-ipv4"
+            }
+          ]
+        }
+      ]
+    },
     "line-gatewayaddress-address":{
       "patterns":[
         {
@@ -507,23 +559,35 @@
         }
       ]
     },
-    "line-description":{
+    "line-stop-address":{
       "patterns":[
         {
-          "match":"(description\\s)(\")(.*)(\")",
-          "captures":{
-            "1":{"name":"keyword.other.edgemax"},
-            "2":{"name":"constant.language.edgemax"},
-            "3":{"name":"string.quoted.double.edgemax"},
-            "4":{"name":"constant.language.edgemax"}
-          }
-        },
+          "begin":"(stop)\\s",
+          "beginCaptures":{
+            "1":{"name":"keyword.other.edgemax"}
+          },
+          "end":"$",
+          "patterns":[
+            {
+              "include":"#part-address-ipv4"
+            }
+          ]
+        }
+      ]
+    },
+    "line-unificontroller-address":{
+      "patterns":[
         {
-          "match":"(description\\s)(.*)",
-          "captures":{
-            "1":{"name":"keyword.other.edgemax"},
-            "2":{"name":"string.unquoted.edgemax"}
-          }
+          "begin":"(unifi-controller)\\s",
+          "beginCaptures":{
+            "1":{"name":"keyword.other.edgemax"}
+          },
+          "end":"$",
+          "patterns":[
+            {
+              "include":"#part-address-ipv4"
+            }
+          ]
         }
       ]
     },
@@ -751,7 +815,9 @@
           },
           "patterns":[
             {"include":"#service-dhcprelay"},
+            {"include":"#service-dhcpserver"},
             {"include":"#service-gui"},
+            {"include":"#service-nat"},
             {"include":"#service-snmp"},
             {"include":"#service-ssh"}
           ]
@@ -783,6 +849,84 @@
         }
       ]
     },
+    "service-dhcpserver":{
+      "patterns":[
+        {
+          "begin":"(dhcp-server)\\s(\\{)",
+          "beginCaptures":{
+            "1":{"name":"support.class.edgemax"},
+            "2":{"name":"constant.character.edgemax"}
+          },
+          "end":"(\\})",
+          "endCaptures":{
+            "1":{"name":"constant.numeric.edgemax"}
+          },
+          "patterns":[
+            {"include":"#service-dhcpserver-sharednetworkname"}
+          ]
+        }
+      ]
+    },
+    "service-dhcpserver-sharednetworkname":{
+      "patterns":[
+        {
+          "begin":"(shared-network-name)\\s(.+)\\s(\\{)$",
+          "beginCaptures":{
+            "1":{"name":"support.class.edgemax"},
+            "2":{"name":"string.unquoted.edgemax"},
+            "3":{"name":"constant.character.edgemax"}
+          },
+          "end":"(\\})",
+          "endCaptures":{
+            "1":{"name":"constant.numeric.edgemax"}
+          },
+          "patterns":[
+            {"include":"#service-dhcpserver-sharednetworkname-subnet"}
+          ]
+        }
+      ]
+    },
+    "service-dhcpserver-sharednetworkname-subnet":{
+      "patterns":[
+        {
+          "begin":"(subnet)\\s((?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(?:\\/(?:[0-9]|[1-2][0-9]|3[0-2])))\\s(\\{)$",
+          "beginCaptures":{
+            "1":{"name":"support.class.edgemax"},
+            "2":{"name":"constant.numeric.edgemax"},
+            "3":{"name":"constant.character.edgemax"}
+          },
+          "end":"(\\})",
+          "endCaptures":{
+            "1":{"name":"constant.numeric.edgemax"}
+          },
+          "patterns":[
+            {"include":"#line-defaultrouter-address"},
+            {"include":"#line-dnsserver-address"},
+            {"include":"#line-unificontroller-address"},
+            {"include":"#service-dhcpserver-sharednetworkname-subnet-start"}
+          ]
+        }
+      ]
+    },
+    "service-dhcpserver-sharednetworkname-subnet-start":{
+      "patterns":[
+        {
+          "begin":"(start)\\s((?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))\\s(\\{)$",
+          "beginCaptures":{
+            "1":{"name":"support.class.edgemax"},
+            "2":{"name":"constant.numeric.edgemax"},
+            "3":{"name":"constant.character.edgemax"}
+          },
+          "end":"(\\})",
+          "endCaptures":{
+            "1":{"name":"constant.numeric.edgemax"}
+          },
+          "patterns":[
+            {"include":"#line-stop-address"}
+          ]
+        }
+      ]
+    },
     "service-gui":{
       "patterns":[
         {
@@ -801,6 +945,71 @@
               "captures":{
                 "1":{"name":"keyword.other.edgemax"},
                 "2":{"name":"string.unquoted.edgemax"}
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "service-nat":{
+      "patterns":[
+        {
+          "begin":"(nat)\\s(\\{)",
+          "beginCaptures":{
+            "1":{"name":"support.class.edgemax"},
+            "2":{"name":"constant.character.edgemax"}
+          },
+          "end":"(\\})",
+          "endCaptures":{
+            "1":{"name":"constant.numeric.edgemax"}
+          },
+          "patterns":[
+            {"include":"#service-nat-rule"}
+          ]
+        }
+      ]
+    },
+    "service-nat-rule":{
+      "patterns":[
+        {
+          "begin":"(rule)\\s(\\d+)\\s(\\{)",
+          "beginCaptures":{
+            "1":{"name":"support.class.edgemax"},
+            "2":{"name":"constant.numeric.edgemax"},
+            "3":{"name":"constant.character.edgemax"}
+          },
+          "end":"(\\})",
+          "endCaptures":{
+            "1":{"name":"constant.numeric.edgemax"}
+          },
+          "patterns":[
+            {"include":"#line-description"},
+            {
+              "match":"(log)\\s(enable|disable)$",
+              "captures":{
+                "1":{"name":"keyword.other.edgemax"},
+                "2":{"name":"constant.language.edgemax"}
+              }
+            },
+            {
+              "match":"(outbound-interface)\\s(.+)$",
+              "captures":{
+                "1":{"name":"keyword.other.edgemax"},
+                "2":{"name":"string.unquoted.edgemax"}
+              }
+            },
+            {
+              "match":"(protocol)\\s(.+)$",
+              "captures":{
+                "1":{"name":"keyword.other.edgemax"},
+                "2":{"name":"string.unquoted.edgemax"}
+              }
+            },
+            {
+              "match":"(type)\\s(destination|masquerade|source)$",
+              "captures":{
+                "1":{"name":"keyword.other.edgemax"},
+                "2":{"name":"constant.language.edgemax"}
               }
             }
           ]
