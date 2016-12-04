@@ -1,0 +1,210 @@
+firewall {
+    name WAN_IN {
+        default-action drop
+        description "WAN to internal"
+        enable-default-drop
+        rule 10 {
+            action accept
+            description "Allow established/related"
+            state {
+                established enable
+                related enable
+            }
+        }
+        rule 20 {
+            action drop
+            description "Drop invalid state"
+            state {
+                invalid enable
+            }
+        }
+    }
+    name WAN_LOCAL {
+        default-action drop
+        description "WAN to router"
+        enable-default-drop
+        rule 10 {
+            action accept
+            description "Allow established/related"
+            state {
+                established enable
+                related enable
+            }
+        }
+        rule 20 {
+            action drop
+            description "Drop invalid state"
+            state {
+                invalid enable
+            }
+        }
+        rule 30 {
+            action accept
+            description "Allow ping"
+            protocol icmp
+        }
+    }
+}
+interfaces {
+    ethernet eth0 {
+        address 30.0.0.2/30
+        description Internet
+        firewall {
+            in {
+                name WAN_IN
+            }
+            local {
+                name WAN_LOCAL
+            }
+        }
+    }
+    ethernet eth1 {
+        address 172.16.1.1/24
+        description Local
+    }
+    ethernet eth2 {
+        address 172.16.2.1/24
+        description "Local 2"
+    }
+}
+service {
+    dhcp-server {
+        disabled false
+        hostfile-update disable
+        shared-network-name LAN1 {
+            authoritative enable
+            subnet 172.16.1.0/24 {
+                default-router 172.16.1.1
+                dns-server 172.16.1.1
+                lease 86400
+                start 172.16.1.38 {
+                    stop 172.16.1.243
+                }
+            }
+        }
+        shared-network-name LAN2 {
+            authoritative enable
+            subnet 172.16.2.0/24 {
+                default-router 172.16.2.1
+                dns-server 172.16.2.1
+                lease 86400
+                start 172.16.2.38 {
+                    stop 172.16.2.243
+                }
+            }
+        }
+    }
+    dns {
+        forwarding {
+            cache-size 150
+            listen-on eth1
+            listen-on eth2
+        }
+    }
+    gui {
+        https-port 443
+    }
+    nat {
+        rule 5010 {
+            outbound-interface eth0
+            type masquerade
+        }
+    }
+    ssh {
+        port 22
+        protocol-version v2
+    }
+}
+system {
+    gateway-address 30.0.0.1
+    host-name R2
+    login {
+        user ubnt {
+            authentication {
+                encrypted-password $1$zKNoUbAo$gomzUbYvgyUMcD436Wo66.
+            }
+            level admin
+        }
+    }
+    name-server 8.8.8.8
+    ntp {
+        server 0.ubnt.pool.ntp.org {
+        }
+        server 1.ubnt.pool.ntp.org {
+        }
+        server 2.ubnt.pool.ntp.org {
+        }
+        server 3.ubnt.pool.ntp.org {
+        }
+    }
+    syslog {
+        global {
+            facility all {
+                level notice
+            }
+            facility protocols {
+                level debug
+            }
+        }
+    }
+    time-zone UTC
+}
+vpn {
+    ipsec {
+        auto-firewall-nat-exclude enable
+        esp-group FOO0 {
+            compression disable
+            lifetime 3600
+            mode tunnel
+            pfs enable
+            proposal 1 {
+                encryption aes128
+                hash sha1
+            }
+        }
+        ike-group FOO0 {
+            key-exchange ikev1
+            lifetime 28800
+            proposal 1 {
+                dh-group 14
+                encryption aes128
+                hash sha1
+            }
+        }
+        ipsec-interfaces {
+            interface eth0
+        }
+        nat-networks {
+            allowed-network 0.0.0.0/0 {
+            }
+        }
+        nat-traversal enable
+        site-to-site {
+            peer 20.0.0.2 {
+                authentication {
+                    mode pre-shared-secret
+                    pre-shared-secret secret
+                }
+                connection-type initiate
+                ike-group FOO0
+                local-address 30.0.0.2
+                tunnel 1 {
+                    allow-nat-networks disable
+                    allow-public-networks disable
+                    esp-group FOO0
+                    local {
+                        prefix 172.16.1.0/24
+                    }
+                    remote {
+                        prefix 192.168.1.0/24
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+/* Warning: Do not remove the following line. */
+/* === vyatta-config-version: "config-management@1:conntrack@1:cron@1:dhcp-relay@1:dhcp-server@4:firewall@5:ipsec@4:nat@3:qos@1:quagga@2:system@4:ubnt-pptp@1:ubnt-util@1:vrrp@1:webgui@1:webproxy@1:zone-policy@1" === */
+/* Release version: v1.6.0.4716006.141031.1731 */
